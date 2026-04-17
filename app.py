@@ -7,12 +7,16 @@ app = Flask(__name__)
 
 DB_FILE = 'database.json'
 
-# Attempt to import openai for AI Engine feature
+# Attempt to import google-generativeai for AI Engine feature
 try:
-    import openai
-    OPENAI_AVAILABLE = bool(os.getenv("OPENAI_API_KEY"))
+    import google.generativeai as genai
+    if "GEMINI_API_KEY" in os.environ:
+        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+        GEMINI_AVAILABLE = True
+    else:
+        GEMINI_AVAILABLE = False
 except ImportError:
-    OPENAI_AVAILABLE = False
+    GEMINI_AVAILABLE = False
 
 # Hardcoded LPU Specific Clues with Coordinates (Sequential path)
 CLUES = [
@@ -72,6 +76,26 @@ def load_db():
 def save_db(data):
     with open(DB_FILE, 'w') as f:
         json.dump(data, f, indent=4)
+
+import re
+
+def normalize_string(s):
+    # Remove all non-alphanumeric characters (spaces, punctuation, etc.)
+    return re.sub(r'[^a-z0-9]', '', s.lower())
+
+def is_correct_guess(guess, correct_answer):
+    norm_guess = normalize_string(guess)
+    norm_correct = normalize_string(correct_answer)
+    
+    # Direct match after removing spaces/punctuation (e.g. "uni mall" == "unimall")
+    if norm_guess == norm_correct:
+        return True
+        
+    # Check if user typed a substantial substring (e.g. "mittal" inside "shanti devi mittal auditorium")
+    if len(norm_guess) > 3 and norm_guess in norm_correct:
+        return True
+        
+    return False
 
 def get_user_data(user_id):
     db = load_db()
@@ -165,7 +189,7 @@ def make_guess():
     if location_id != current_clue["id"]:
         return jsonify({"success": False, "error": "Wrong pin! Try the active pin."})
         
-    if answer == current_clue["answer"]:
+    if is_correct_guess(answer, current_clue["answer"]):
         user_data["level"] += 1
         level = user_data["level"]
         
@@ -198,7 +222,20 @@ def chat():
             
         user_data["hints_used"] = user_data.get("hints_used", 0) + 1
         save_db(db)
+        
+        target_name = CLUES[level]["name"]
         hint_text = CLUES[level]["hint"]
+        
+        if GEMINI_AVAILABLE:
+            try:
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                prompt = f"Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly."
+                response = model.generate_content(prompt)
+                if response.text:
+                    hint_text = response.text.replace('\n', '<br>')
+            except Exception as e:
+                print(f"Gemini API Error: {e}")
+                
         return jsonify({"reply": f"<b>💡 AI Hint ({user_data['hints_used']} used - 5m penalty):</b><br>{hint_text}"})
 
     if user_message.startswith("/team "):
@@ -207,7 +244,17 @@ def chat():
         save_db(db)
         return jsonify({"reply": f"Team name set to <b>{team_name}</b>! 🎉 Good luck!"})
 
-    # Default chatbot response
+    # If Gemini is configured, use it for generic chat!
+    if GEMINI_AVAILABLE:
+        try:
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content(f"You are a helpful and mysterious tour guide for a treasure hunt. Answer this shortly: {user_message}")
+            if response.text:
+                return jsonify({"reply": f"{response.text.replace('\n', '<br>')}"})
+        except Exception as e:
+            pass
+            
+    # Default chatbot response if API key is not present
     return jsonify({"reply": "I am your Campus Guide interface! Ask for a <b>/hint</b> if you are stuck at your current location!"})
 
 if __name__ == "__main__":
