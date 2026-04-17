@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Treasure Hunt | LPU Map</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Main Map Container -->
+    <div id="map"></div>
+
+    <!-- UI Overlay: Top Bar -->
+    <header class="top-overlay">
+        <div class="logo">
+            <h1>LPU Treasure Hunt</h1>
+        </div>
+        <div class="top-actions">
+            <button id="toggle-chatbot" title="Open AI Guide"><i class="fa-solid fa-robot"></i> Guide</button>
+            <a href="/leaderboard" target="_blank" class="glass-btn"><i class="fa-solid fa-trophy"></i></a>
+            <button id="reset-btn" class="glass-btn" title="Restart"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+    </header>
+
+    <!-- Success Modal Overlay (Hidden by Default) -->
+    <div id="success-overlay" class="hidden">
+        <div class="glass-card zoom-in">
+            <h2>🎉 Fantastic!</h2>
+            <p>You unlocked the next location!</p>
+            <button id="continue-btn" class="primary-btn">Continue Journey</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal (Hidden by Default) -->
+    <div id="completion-overlay" class="hidden">
+        <div class="glass-card zoom-in">
+            <h2>🏆 Treasure Found! 🏆</h2>
+            <p>You've successfully conquered the LPU Campus map.</p>
+            <a href="/leaderboard" target="_blank" class="primary-btn">View Leaderboard Rank</a>
+        </div>
+    </div>
+
+    <!-- Sliding Chatbot Sidebar -->
+    <aside id="chatbot-sidebar" class="chatbot-hidden">
+        <div class="chat-header">
+            <div class="header-content">
+                <div class="bot-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div class="header-text">
+                    <h2>AI Guide</h2>
+                    <p>Online</p>
+                </div>
+            </div>
+            <button id="close-chatbot"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <main class="chat-area" id="chat-contents">
+            <div class="message bot-message intro-message">
+                <div class="message-bubble">
+                    👋 I'm your AI guide! Click the active glowing pin on the map to answer its riddle. If you fail, I'll automatically pop open here to provide a hint!
+                </div>
+            </div>
+        </main>
+
+        <footer class="chat-input-area">
+            <form id="chat-form">
+                <div class="input-wrapper">
+                    <input type="text" id="user-input" placeholder="Type /hint to ask directly..." autocomplete="off">
+                    <button type="submit" id="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </footer>
+    </aside>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

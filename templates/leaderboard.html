@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPU Hunt Leaderboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --primary-color: #ff6b00;
+            --primary-glow: rgba(255, 107, 0, 0.4);
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 107, 0, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(100, 100, 255, 0.05), transparent 25%);
+        }
+
+        .leaderboard-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--container-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, rgba(22, 27, 34, 0.9), rgba(33, 38, 45, 0.9));
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--primary-glow);
+            letter-spacing: 1px;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .board {
+            padding: 20px;
+        }
+
+        .team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .team-row:hover {
+            background-color: rgba(255, 107, 0, 0.05);
+        }
+
+        .team-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            width: 40px;
+        }
+
+        .rank-1 { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .rank-2 { color: #C0C0C0; }
+        .rank-3 { color: #CD7F32; }
+
+        .team-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .team-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .hints {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .time {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <div class="header">
+            <h1><i class="fa-solid fa-trophy"></i> Hall of Fame</h1>
+            <p class="subtitle">LPU Campus Treasure Hunt</p>
+        </div>
+        
+        <div class="board">
+            {% if leaderboard %}
+                {% for team in leaderboard %}
+                <div class="team-row">
+                    <div class="rank {% if loop.index <= 3 %}rank-{{ loop.index }}{% endif %}">
+                        #{{ loop.index }}
+                    </div>
+                    <div class="team-info">
+                        <div class="team-name">{{ team.team }}</div>
+                        <div class="hints"><i class="fa-solid fa-lightbulb"></i> {{ team.hints }} Hints Used</div>
+                    </div>
+                    <div class="time">
+                        <i class="fa-regular fa-clock"></i> {{ team.time_str }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    No teams have completed the hunt yet... Be the first! 🚀
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
