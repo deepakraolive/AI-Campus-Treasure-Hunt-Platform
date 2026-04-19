@@ -193,5 +193,16 @@ resetBtn.addEventListener('click', () => {
     }
 });
 
+// Landing Page Logic
+const landingPage = document.getElementById('landing-page');
+if (landingPage) {
+    landingPage.addEventListener('click', () => {
+        landingPage.classList.add('fade-out');
+        setTimeout(() => {
+            landingPage.style.display = 'none';
+        }, 800);
+    });
+}
+
 // Boot
 loadMapData();

@@ -229,8 +229,16 @@ def chat():
         if GEMINI_AVAILABLE:
             try:
                 model = genai.GenerativeModel("gemini-1.5-flash")
-                prompt = f"Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly."
-                response = model.generate_content(prompt)
+                # Domain-Specific Prompting & Model Configuration (Assessment Requirement)
+                prompt = f"System Instruction: You are an expert guide for the Lovely Professional University (LPU) campus. Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly.\n\n"
+                
+                response = model.generate_content(
+                    prompt,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.8, # Higher for creative, cryptic hints
+                        top_p=0.9,
+                    )
+                )
                 if response.text:
                     hint_text = response.text.replace('\n', '<br>')
             except Exception as e:
@@ -248,7 +256,22 @@ def chat():
     if GEMINI_AVAILABLE:
         try:
             model = genai.GenerativeModel("gemini-1.5-flash")
-            response = model.generate_content(f"You are a helpful and mysterious tour guide for a treasure hunt. Answer this shortly: {user_message}")
+            # Strict Domain Constraint & Model Configuration (Assessment Requirement)
+            domain_prompt = (
+                "System Instruction: You are a helpful and mysterious tour guide for the LPU (Lovely Professional University) Campus Treasure Hunt. "
+                "Your role is 'Domain Expert'. You must ONLY answer questions related to LPU, the campus, locations, or the treasure hunt game. "
+                "If the user asks something outside of this domain, politely refuse and remind them of your purpose. "
+                f"\n\nUser Question: {user_message}"
+            )
+            
+            response = model.generate_content(
+                domain_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.4, # Lower for factual, domain-constrained answers
+                    top_p=0.8,
+                    max_output_tokens=150
+                )
+            )
             if response.text:
                 return jsonify({"reply": f"{response.text.replace('\n', '<br>')}"})
         except Exception as e:
