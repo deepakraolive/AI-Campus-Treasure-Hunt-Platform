@@ -241,14 +241,35 @@ body {
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     border: 2px solid white;
+    transition: scale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.pin-locked { background: #555; opacity: 0.7; }
+.custom-pin:hover {
+    scale: 1.35;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+    z-index: 1000 !important;
+}
+
+.pin-locked { background: #555; opacity: 0.7; pointer-events: none; }
 .pin-solved { background: #238636; }
 .pin-active { 
     background: var(--primary-color);
     animation: pulse 1.5s infinite;
 }
+
+.pin-start {
+    border-radius: 15px; /* Oval instead of circle */
+    background: var(--user-msg-bg);
+    animation: pulse 1.5s infinite;
+}
+
+/* Candy Crush Level Colors */
+.level-1 { border-color: #3498db; }
+.level-2 { border-color: #9b59b6; }
+.level-3 { border-color: #f1c40f; }
+.level-4 { border-color: #e67e22; }
+.level-5 { border-color: #e74c3c; }
 
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 var(--primary-glow); }
@@ -290,6 +311,20 @@ body {
 @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
 
 /* Overlays */
+#registration-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 4000;
+    display: flex; justify-content: center; align-items: center;
+}
+
+#registration-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+#registration-form input, #registration-form textarea {
+    width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color); color: white; border-radius: 8px; font-family: 'Inter';
+}
+
 #success-overlay, #completion-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.7);
@@ -298,6 +333,16 @@ body {
     display: flex; justify-content: center; align-items: center;
 }
 .hidden { display: none !important; }
+
+.location-reveal-image {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
 
 .glass-card {
     background: var(--glass-bg);

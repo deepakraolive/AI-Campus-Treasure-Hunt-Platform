@@ -9,6 +9,9 @@ DB_FILE = 'database.json'
 
 # Attempt to import google-generativeai for AI Engine feature
 try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    
     import google.generativeai as genai
     if "GEMINI_API_KEY" in os.environ:
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
@@ -20,51 +23,26 @@ except ImportError:
 
 # Hardcoded LPU Specific Clues with Coordinates (Sequential path)
 CLUES = [
-    {
-        "id": "loc_1",
-        "name": "Main Gate",
-        "question": "The main entry point with heavy security.", 
-        "answer": "main gate",
-        "hint": "It's the gateway to the universe... I mean, university.",
-        "lat": 31.2536,
-        "lng": 75.7036
-    },
-    {
-        "id": "loc_2",
-        "name": "Block 32",
-        "question": "Where indoor sports and grand events take place.", 
-        "answer": "shanti devi mittal auditorium",
-        "hint": "Often called SDMA, located right near Block 32.",
-        "lat": 31.2530,
-        "lng": 75.7020
-    },
-    {
-        "id": "loc_3",
-        "name": "Uni Mall",
-        "question": "The bustling hub where students shop and eat together.", 
-        "answer": "uni mall",
-        "hint": "It has Dominos, stationery shops, and lots of food!",
-        "lat": 31.2505,
-        "lng": 75.7015
-    },
-    {
-        "id": "loc_4",
-        "name": "Central Library",
-        "question": "The place with thousands of books, where knowledge sleeps.", 
-        "answer": "library",
-        "hint": "It's the Central Library! Look for the large building with silence inside.",
-        "lat": 31.2480,
-        "lng": 75.7000
-    },
-    {
-        "id": "loc_5",
-        "name": "Unipolis",
-        "question": "The massive open ground where mega events and concerts happen.", 
-        "answer": "unipolis",
-        "hint": "Baldev Raj Mittal Unipolis. Ask anyone where the stage is!",
-        "lat": 31.2465,
-        "lng": 75.7010
-    }
+    {'id': 'loc_1', 'name': 'Main Gate', 'question': 'I stand tall at the entrance, welcoming all who come to learn.', 'answer': 'main gate', 'hint': 'Look for the grand entrance.', 'image': 'Main Gate.jpeg', 'lat': 31.2585, 'lng': 75.7065},
+    {'id': 'loc_2', 'name': 'Main Gate', 'question': 'Security checks your ID here before you step into the campus universe.', 'answer': 'main gate', 'hint': 'Where do you first show your ID?', 'image': 'Main Gate.jpeg', 'lat': 31.2582, 'lng': 75.7067},
+    {'id': 'loc_3', 'name': 'Main Gate', 'question': 'The very first landmark you cross when arriving from the highway.', 'answer': 'main gate', 'hint': 'The starting point of the campus.', 'image': 'Main Gate.jpeg', 'lat': 31.2579, 'lng': 75.7069},
+    {'id': 'loc_4', 'name': 'Admissions Block', 'question': 'The place where your journey at LPU officially began.', 'answer': 'admissions', 'hint': 'Where did you submit your forms?', 'image': 'Admission.jpeg', 'lat': 31.254, 'lng': 75.704},
+    {'id': 'loc_5', 'name': 'Admissions Block', 'question': 'Got questions about fees or courses? This is the building to visit.', 'answer': 'admissions', 'hint': 'Admissions happen here.', 'image': 'Admission.jpeg', 'lat': 31.2537, 'lng': 75.7042},
+    {'id': 'loc_6', 'name': 'Mittal School of Business', 'question': 'Entrepreneurs and managers are forged in this specific block.', 'answer': 'mittal school of business', 'hint': 'Also known as Block 32.', 'image': 'Mittal School of Business.jpeg', 'lat': 31.253, 'lng': 75.702},
+    {'id': 'loc_7', 'name': 'Mittal School of Business', 'question': "This building sounds like a corporation, but it's a school inside LPU.", 'answer': 'mittal school of business', 'hint': 'Business students study here.', 'image': 'Mittal School of Business.jpeg', 'lat': 31.2527, 'lng': 75.7022},
+    {'id': 'loc_8', 'name': 'Mittal School of Business', 'question': "Block 32's formal name honors a prominent family.", 'answer': 'mittal school of business', 'hint': 'Mittal is the name.', 'image': 'Mittal School of Business.jpeg', 'lat': 31.2524, 'lng': 75.7024},
+    {'id': 'loc_9', 'name': 'Unipolis', 'question': 'The massive open ground where mega events and concerts happen.', 'answer': 'unipolis', 'hint': 'Baldev Raj Mittal Unipolis.', 'image': 'Uni Polis.jpeg', 'lat': 31.2465, 'lng': 75.701},
+    {'id': 'loc_10', 'name': 'Unipolis', 'question': 'Where thousands gather to celebrate festivals and watch celebrity performances.', 'answer': 'unipolis', 'hint': "It's the central open stage area.", 'image': 'Uni Polis.jpeg', 'lat': 31.2462, 'lng': 75.7012},
+    {'id': 'loc_11', 'name': 'Unipolis', 'question': 'A semi-covered arena that is the heart of cultural activities.', 'answer': 'unipolis', 'hint': "Sounds like 'University Metropolis'.", 'image': 'Uni Polis.jpeg', 'lat': 31.2459, 'lng': 75.7014},
+    {'id': 'loc_12', 'name': 'Student Welfare Wing', 'question': 'Need to resolve a grievance or join a club? Head here.', 'answer': 'student welfare', 'hint': 'They care for your welfare.', 'image': 'Student Welfare wing.jpeg', 'lat': 31.247, 'lng': 75.7015},
+    {'id': 'loc_13', 'name': 'Student Welfare Wing', 'question': 'The department dedicated to student affairs and extracurriculars.', 'answer': 'student welfare', 'hint': 'SWW is the acronym.', 'image': 'Student Welfare wing.jpeg', 'lat': 31.2467, 'lng': 75.7017},
+    {'id': 'loc_14', 'name': 'Student Welfare Wing', 'question': 'Where student organizations and event permissions are managed.', 'answer': 'student welfare', 'hint': 'Welfare is their middle name.', 'image': 'Student Welfare wing.jpeg', 'lat': 31.2464, 'lng': 75.7019},
+    {'id': 'loc_15', 'name': 'Design (Fashion) Block', 'question': 'Where creativity flows and fabrics turn into masterpieces.', 'answer': 'design block', 'hint': 'Fashion students are found here.', 'image': 'Design(Fashion) Block.jpeg', 'lat': 31.2485, 'lng': 75.699},
+    {'id': 'loc_16', 'name': 'Design (Fashion) Block', 'question': 'Mannequins and sewing machines are common sights in this building.', 'answer': 'design block', 'hint': "It's the fashion hub.", 'image': 'Design(Fashion) Block.jpeg', 'lat': 31.2482, 'lng': 75.6992},
+    {'id': 'loc_17', 'name': 'Robo Park', 'question': 'A park where technology meets nature, filled with metallic structures.', 'answer': 'robo park', 'hint': 'Robots in a park.', 'image': 'Robo Park.jpeg', 'lat': 31.249, 'lng': 75.698},
+    {'id': 'loc_18', 'name': 'Gyan Joti', 'question': 'A place of light and knowledge, providing spiritual and mental peace.', 'answer': 'gyan joti', 'hint': 'Gyan means knowledge.', 'image': 'Gyan Joti.jpeg', 'lat': 31.25, 'lng': 75.697},
+    {'id': 'loc_19', 'name': 'Gyan Joti', 'question': 'This structure is symbolic of enlightenment on campus.', 'answer': 'gyan joti', 'hint': 'Look for the light.', 'image': 'Gyan Joti.jpeg', 'lat': 31.2497, 'lng': 75.6972},
+    {'id': 'loc_20', 'name': 'Uni Hospital', 'question': "Where you go when you're feeling under the weather on campus.", 'answer': 'uni hospital', 'hint': 'The medical facility.', 'image': 'Uni Hospital.jpeg', 'lat': 31.251, 'lng': 75.696},
 ]
 
 def load_db():
@@ -103,6 +81,8 @@ def get_user_data(user_id):
         db[user_id] = {
             "level": 0,
             "team_name": f"Team-{os.urandom(2).hex()}",
+            "registered": False,
+            "members": "",
             "start_time": time.time(),
             "end_time": None,
             "completed": False,
@@ -110,6 +90,25 @@ def get_user_data(user_id):
         }
         save_db(db)
     return db[user_id]
+
+@app.route("/register", methods=["POST"])
+def register():
+    data = request.json
+    user_id = data.get("user_id")
+    team_name = data.get("team_name")
+    members = data.get("members")
+    
+    db = load_db()
+    if user_id not in db:
+        get_user_data(user_id)
+        db = load_db()
+        
+    user_data = db[user_id]
+    user_data["team_name"] = team_name
+    user_data["members"] = members
+    user_data["registered"] = True
+    save_db(db)
+    return jsonify({"success": True})
 
 @app.route("/")
 def index():
@@ -150,7 +149,8 @@ def get_map_data():
             "lat": clue["lat"],
             "lng": clue["lng"],
             "status": "locked",
-            "question": None
+            "question": None,
+            "game_level": 1 if i < 5 else 2 if i < 8 else 3 if i < 14 else 4 if i < 17 else 5
         }
         if i < level:
             loc["status"] = "solved"
@@ -164,6 +164,7 @@ def get_map_data():
     return jsonify({
         "level": level,
         "completed": user_data.get("completed", False),
+        "registered": user_data.get("registered", False),
         "locations": locations
     })
 
@@ -198,7 +199,7 @@ def make_guess():
             user_data["end_time"] = time.time()
         
         save_db(db)
-        return jsonify({"success": True})
+        return jsonify({"success": True, "image": current_clue["image"], "name": current_clue["name"]})
     else:
         # Wrong answer triggers hint logic via frontend chatbot
         return jsonify({"success": False, "trigger_hint": True})

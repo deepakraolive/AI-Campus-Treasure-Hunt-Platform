@@ -39,11 +39,25 @@
         </div>
     </header>
 
+    <!-- Registration Modal Overlay (Hidden by Default) -->
+    <div id="registration-overlay" class="hidden">
+        <div class="glass-card zoom-in registration-card">
+            <h2>📝 Team Registration</h2>
+            <p>Enter your team details to start the Campus Hunt.</p>
+            <form id="registration-form">
+                <input type="text" id="team-name" placeholder="Team Name" required>
+                <textarea id="team-members" placeholder="Member Names (comma separated)" rows="3" required></textarea>
+                <button type="submit" class="primary-btn">Start Journey</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Success Modal Overlay (Hidden by Default) -->
     <div id="success-overlay" class="hidden">
         <div class="glass-card zoom-in">
             <h2>🎉 Fantastic!</h2>
-            <p>You unlocked the next location!</p>
+            <p>You solved the riddle for <b id="success-location-name">Location</b>!</p>
+            <img id="success-image" src="" alt="Location Image" class="location-reveal-image hidden">
             <button id="continue-btn" class="primary-btn">Continue Journey</button>
         </div>
     </div>

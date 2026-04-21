@@ -1,8 +1,8 @@
 // User ID setup
-let userId = localStorage.getItem('lpu_hunt_uid');
+let userId = sessionStorage.getItem('lpu_hunt_uid');
 if (!userId) {
     userId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('lpu_hunt_uid', userId);
+    sessionStorage.setItem('lpu_hunt_uid', userId);
 }
 
 // UI Elements
@@ -13,7 +13,11 @@ const chatContents = document.getElementById('chat-contents');
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const successOverlay = document.getElementById('success-overlay');
+const successImage = document.getElementById('success-image');
+const successLocationName = document.getElementById('success-location-name');
 const completionOverlay = document.getElementById('completion-overlay');
+const registrationOverlay = document.getElementById('registration-overlay');
+const registrationForm = document.getElementById('registration-form');
 const continueBtn = document.getElementById('continue-btn');
 const resetBtn = document.getElementById('reset-btn');
 
@@ -22,10 +26,11 @@ const lpuCenter = [31.2505, 75.7015];
 const map = L.map('map', { zoomControl: false }).setView(lpuCenter, 16);
 L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-// Add OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
+// Add Google Maps tiles (More up to date)
+L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0','mt1','mt2','mt3'],
+    attribution: '© Google Maps'
 }).addTo(map);
 
 // Sidebar Toggle Logic
@@ -47,6 +52,11 @@ async function loadMapData() {
     });
     const data = await res.json();
     
+    if (!data.registered) {
+        registrationOverlay.classList.remove('hidden');
+        return; // wait for registration
+    }
+    
     if (data.completed) {
         completionOverlay.classList.remove('hidden');
     }
@@ -67,12 +77,22 @@ async function loadMapData() {
             iconContent = '<i class="fa-solid fa-star"></i>';
         }
         
-        const customIcon = L.divIcon({
-            className: `custom-pin ${iconClass}`,
+        let customIcon = L.divIcon({
+            className: `custom-pin ${iconClass} level-${loc.game_level || 1}`,
             html: iconContent,
             iconSize: [30, 30],
             iconAnchor: [15, 15]
         });
+        
+        // Special "START" pin for the very first location
+        if (loc.id === 'loc_1' && loc.status === 'active') {
+            customIcon = L.divIcon({
+                className: `custom-pin pin-start level-1`,
+                html: '<span style="font-size: 0.7rem; font-weight: 900; letter-spacing: 1px;">START</span>',
+                iconSize: [50, 30],
+                iconAnchor: [25, 15]
+            });
+        }
         
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).addTo(map);
         markers.push(marker);
@@ -118,6 +138,9 @@ window.submitGuess = async function(locationId) {
     const data = await res.json();
     
     if (data.success) {
+        successLocationName.innerText = data.name || "Unknown Location";
+        successImage.src = `/static/images/${data.image}`;
+        successImage.classList.remove('hidden');
         map.closePopup();
         successOverlay.classList.remove('hidden');
     } else {
@@ -136,8 +159,26 @@ window.submitGuess = async function(locationId) {
 
 continueBtn.addEventListener('click', () => {
     successOverlay.classList.add('hidden');
+    successImage.classList.add('hidden');
     loadMapData();
 });
+
+if (registrationForm) {
+    registrationForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const teamName = document.getElementById('team-name').value;
+        const teamMembers = document.getElementById('team-members').value;
+        
+        await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, team_name: teamName, members: teamMembers })
+        });
+        
+        registrationOverlay.classList.add('hidden');
+        loadMapData();
+    });
+}
 
 // Chatbot Logic
 function scrollToBottom() { chatContents.scrollTop = chatContents.scrollHeight; }
@@ -187,8 +228,7 @@ chatForm.addEventListener('submit', (e) => {
 
 resetBtn.addEventListener('click', () => {
     if(confirm("Are you sure you want to completely restart your journey?")) {
-        userId = 'user_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('lpu_hunt_uid', userId);
+        sessionStorage.removeItem('lpu_hunt_uid');
         location.reload();
     }
 });
