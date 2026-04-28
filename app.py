@@ -275,8 +275,9 @@ def chat():
     
     db = load_db()
     if user_id not in db:
-        get_user_data(user_id) # initializes
-    user_data = db[user_id]
+        user_data = get_user_data(user_id) # initializes
+    else:
+        user_data = db[user_id]
     level = user_data["level"]
 
     if user_message == "/hint":
