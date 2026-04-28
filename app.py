@@ -12,15 +12,37 @@ try:
 except ImportError:
     pass
 
-try:
-    from groq import Groq
-    if "GROQ_API_KEY" in os.environ:
-        client = Groq(api_key=os.environ["GROQ_API_KEY"])
-        GROQ_AVAILABLE = True
-    else:
-        GROQ_AVAILABLE = False
-except ImportError:
+import urllib.request
+import json
+
+if "GROQ_API_KEY" in os.environ:
+    GROQ_AVAILABLE = True
+else:
     GROQ_AVAILABLE = False
+
+def call_groq_api(sys_prompt, user_message=None, temp=0.1, max_tok=5):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+    messages = [{"role": "system", "content": sys_prompt}]
+    if user_message:
+        messages.append({"role": "user", "content": user_message})
+    data = {
+        "model": "llama-3.1-8b-instant",
+        "messages": messages,
+        "temperature": temp,
+        "max_tokens": max_tok
+    }
+    req = urllib.request.Request(url, headers=headers, data=json.dumps(data).encode('utf-8'))
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            return result['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"Groq API Error: {e}")
+        return None
 
 if os.environ.get("VERCEL"):
     DB_FILE = '/tmp/database.json'
@@ -72,13 +94,10 @@ def evaluate_guess_with_ai(guess, location_name):
         return False
     try:
         sys_prompt = f"You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 14' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
-        chat_completion = client.chat.completions.create(
-            messages=[{"role": "system", "content": sys_prompt}],
-            model="llama-3.1-8b-instant",
-            temperature=0.1,
-            max_tokens=5
-        )
-        return "YES" in chat_completion.choices[0].message.content.strip().upper()
+        response_text = call_groq_api(sys_prompt, temp=0.1, max_tok=5)
+        if response_text:
+            return "YES" in response_text.strip().upper()
+        return False
     except Exception as e:
         print(f"AI evaluation error: {e}")
         return False
@@ -295,14 +314,9 @@ def chat():
                 # Domain-Specific Prompting & Model Configuration (Assessment Requirement)
                 sys_prompt = f"You are an expert guide for the Lovely Professional University (LPU) campus. Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly."
                 
-                chat_completion = client.chat.completions.create(
-                    messages=[{"role": "system", "content": sys_prompt}],
-                    model="llama-3.1-8b-instant",
-                    temperature=0.8, # Higher for creative, cryptic hints
-                    top_p=0.9,
-                )
-                if chat_completion.choices[0].message.content:
-                    hint_text = chat_completion.choices[0].message.content.replace('\n', '<br>')
+                response_text = call_groq_api(sys_prompt, temp=0.8, max_tok=50)
+                if response_text:
+                    hint_text = response_text.replace('\n', '<br>')
             except Exception as e:
                 print(f"Groq API Error: {e}")
                 
@@ -324,18 +338,9 @@ def chat():
                 "If the user asks something outside of this domain, politely refuse and remind them of your purpose."
             )
             
-            chat_completion = client.chat.completions.create(
-                messages=[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": user_message}
-                ],
-                model="llama-3.1-8b-instant",
-                temperature=0.4, # Lower for factual, domain-constrained answers
-                top_p=0.8,
-                max_tokens=150
-            )
-            if chat_completion.choices[0].message.content:
-                return jsonify({"reply": f"{chat_completion.choices[0].message.content.replace('\n', '<br>')}"})
+            response_text = call_groq_api(sys_prompt, user_message=user_message, temp=0.4, max_tok=150)
+            if response_text:
+                return jsonify({"reply": f"{response_text.replace('\n', '<br>')}"})
         except Exception as e:
             pass
             
