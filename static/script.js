@@ -61,6 +61,12 @@ async function loadMapData() {
         completionOverlay.classList.remove('hidden');
     }
     
+    // Update Coins
+    if (data.coins !== undefined) {
+        const coinSpan = document.getElementById('coin-amount');
+        if (coinSpan) coinSpan.innerText = data.coins;
+    }
+    
     // Clear old markers
     markers.forEach(m => map.removeLayer(m));
     markers = [];

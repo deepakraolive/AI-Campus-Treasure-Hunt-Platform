@@ -139,7 +139,8 @@ def get_user_data(user_id):
             "end_time": None,
             "completed": False,
             "hints_used": 0,
-            "failed_attempts_current_level": 0
+            "failed_attempts_current_level": 0,
+            "coins": 0
         }
         save_db(db)
     return db[user_id]
@@ -218,6 +219,7 @@ def get_map_data():
         "level": level,
         "completed": user_data.get("completed", False),
         "registered": user_data.get("registered", False),
+        "coins": user_data.get("coins", 0),
         "locations": locations
     })
 
@@ -253,6 +255,7 @@ def make_guess():
     if is_correct:
         user_data["level"] += 1
         user_data["failed_attempts_current_level"] = 0
+        user_data["coins"] = user_data.get("coins", 0) + 100
         level = user_data["level"]
         
         if level >= len(CLUES):
