@@ -65,10 +65,10 @@ body {
 }
 
 /* Custom dark mode map filter for OSM */
-.leaflet-layer,
-.leaflet-control-zoom-in,
-.leaflet-control-zoom-out,
-.leaflet-control-attribution {
+body:not(.light-theme) .leaflet-layer,
+body:not(.light-theme) .leaflet-control-zoom-in,
+body:not(.light-theme) .leaflet-control-zoom-out,
+body:not(.light-theme) .leaflet-control-attribution {
     filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
@@ -246,7 +246,7 @@ body {
     background: none;
     border: none;
     padding: 10px 15px;
-    color: white;
+    color: var(--text-primary);
     outline: none;
 }
 
@@ -307,7 +307,7 @@ body {
 .leaflet-popup-content-wrapper {
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
-    color: white;
+    color: var(--text-primary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
 }
@@ -318,9 +318,9 @@ body {
 .popup-content input {
     width: 100%;
     padding: 10px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.1);
     border: 1px solid var(--border-color);
-    color: white;
+    color: var(--text-primary);
     border-radius: 8px;
     margin-bottom: 10px;
 }
@@ -348,8 +348,8 @@ body {
 
 #registration-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 #registration-form input, #registration-form textarea {
-    width: 100%; padding: 12px; background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border-color); color: white; border-radius: 8px; font-family: 'Inter';
+    width: 100%; padding: 12px; background: rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; font-family: 'Inter';
 }
 
 #success-overlay, #completion-overlay {

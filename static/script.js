@@ -119,12 +119,14 @@ async function loadMapData() {
         
         // Final Flag
         const isLastLocation = (loc.id === data.locations[data.locations.length - 1].id);
-        if (isLastLocation && loc.status === 'active') {
+        if (isLastLocation) {
+            let flagColor = loc.status === 'locked' ? '#555' : (loc.status === 'solved' ? '#238636' : 'var(--primary-color)');
+            let flagClass = loc.status === 'active' ? 'pin-active' : (loc.status === 'solved' ? 'pin-solved' : 'pin-locked');
             customIcon = L.divIcon({
-                className: `custom-pin pin-active level-${loc.game_level || 5}`,
+                className: `custom-pin ${flagClass} level-${loc.game_level || 5}`,
                 html: '<i class="fa-solid fa-flag-checkered"></i>',
-                iconSize: [40, 40],
-                iconAnchor: [20, 20]
+                iconSize: [35, 35],
+                iconAnchor: [17, 17]
             });
         }
         
@@ -298,6 +300,14 @@ if (landingPage) {
         setTimeout(() => {
             landingPage.style.display = 'none';
         }, 800);
+        
+        // Auto-play music when user first interacts with the site
+        if (!isMusicPlaying) {
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                toggleMusicBtn.style.color = '#ff6b00';
+            }).catch(e => console.log("Audio autoplay blocked by browser:", e));
+        }
     });
 }
 
