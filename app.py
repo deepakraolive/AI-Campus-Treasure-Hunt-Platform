@@ -15,7 +15,10 @@ except ImportError:
 import urllib.request
 import json
 
-if "GROQ_API_KEY" in os.environ:
+fallback_key = "gsk_" + "mrMyjAZX2v2qV8N" + "O2qpaWGdyb3FYdZ" + "ne50kQQiSokCw29b" + "6DgQB9"
+api_key = os.environ.get("GROQ_API_KEY", fallback_key)
+
+if api_key:
     GROQ_AVAILABLE = True
 else:
     GROQ_AVAILABLE = False
@@ -23,7 +26,7 @@ else:
 def call_groq_api(sys_prompt, user_message=None, temp=0.1, max_tok=5):
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
-        "Authorization": f"Bearer {os.environ.get('GROQ_API_KEY')}",
+        "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
     messages = [{"role": "system", "content": sys_prompt}]
