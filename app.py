@@ -31,7 +31,7 @@ else:
 CLUES = [
     {'id': 'loc_1', 'name': 'Main Gate', 'question': 'I stand tall at the entrance, welcoming all who come to learn.', 'answer': 'main gate', 'hint': 'Look for the grand entrance.', 'image': 'main_gate.jpeg', 'lat': 31.2585, 'lng': 75.7065},
     {'id': 'loc_4', 'name': 'Admissions Block', 'question': 'The place where your journey at LPU officially began.', 'answer': 'admissions', 'hint': 'Where did you submit your forms?', 'image': 'admission.jpeg', 'lat': 31.254, 'lng': 75.704},
-    {'id': 'loc_6', 'name': 'Mittal School of Business', 'question': 'Entrepreneurs and managers are forged in this specific block.', 'answer': 'mittal school of business', 'hint': 'Also known as Block 32.', 'image': 'mittal_school.jpeg', 'lat': 31.253, 'lng': 75.702},
+    {'id': 'loc_6', 'name': 'Mittal School of Business', 'question': 'Entrepreneurs and managers are forged in this specific block.', 'answer': 'mittal school of business', 'hint': 'Also known as Block 14.', 'image': 'mittal_school.jpeg', 'lat': 31.253, 'lng': 75.702},
     {'id': 'loc_9', 'name': 'Unipolis', 'question': 'The massive open ground where mega events and concerts happen.', 'answer': 'unipolis', 'hint': 'Baldev Raj Mittal Unipolis.', 'image': 'unipolis.jpeg', 'lat': 31.2465, 'lng': 75.701},
     {'id': 'loc_12', 'name': 'Student Welfare Wing', 'question': 'Need to resolve a grievance or join a club? Head here.', 'answer': 'student welfare', 'hint': 'They care for your welfare.', 'image': 'student_welfare.jpeg', 'lat': 31.247, 'lng': 75.7015},
     {'id': 'loc_15', 'name': 'Design (Fashion) Block', 'question': 'Where creativity flows and fabrics turn into masterpieces.', 'answer': 'design block', 'hint': 'Fashion students are found here.', 'image': 'design_block.jpeg', 'lat': 31.2485, 'lng': 75.699},
@@ -44,7 +44,7 @@ CLUES = [
     {'id': 'loc_20', 'name': 'Uni Hospital', 'question': "Where you go when you're feeling under the weather on campus.", 'answer': 'uni hospital', 'hint': 'The medical facility.', 'image': 'uni_hospital.jpeg', 'lat': 31.251, 'lng': 75.696},
     {'id': 'loc_5', 'name': 'Admissions Block', 'question': 'Got questions about fees or courses? This is the building to visit.', 'answer': 'admissions', 'hint': 'Admissions happen here.', 'image': 'admission.jpeg', 'lat': 31.2537, 'lng': 75.7042},
     {'id': 'loc_3', 'name': 'Main Gate', 'question': 'The very first landmark you cross when arriving from the highway.', 'answer': 'main gate', 'hint': 'The starting point of the campus.', 'image': 'main_gate.jpeg', 'lat': 31.2579, 'lng': 75.7069},
-    {'id': 'loc_8', 'name': 'Mittal School of Business', 'question': "Block 32's formal name honors a prominent family.", 'answer': 'mittal school of business', 'hint': 'Mittal is the name.', 'image': 'mittal_school.jpeg', 'lat': 31.2524, 'lng': 75.7024},
+    {'id': 'loc_8', 'name': 'Mittal School of Business', 'question': "Block 14's formal name honors a prominent family.", 'answer': 'mittal school of business', 'hint': 'Mittal is the name.', 'image': 'mittal_school.jpeg', 'lat': 31.2524, 'lng': 75.7024},
     {'id': 'loc_11', 'name': 'Unipolis', 'question': 'A semi-covered arena that is the heart of cultural activities.', 'answer': 'unipolis', 'hint': "Sounds like 'University Metropolis'.", 'image': 'unipolis.jpeg', 'lat': 31.2459, 'lng': 75.7014},
     {'id': 'loc_14', 'name': 'Student Welfare Wing', 'question': 'Where student organizations and event permissions are managed.', 'answer': 'student welfare', 'hint': 'Welfare is their middle name.', 'image': 'student_welfare.jpeg', 'lat': 31.2464, 'lng': 75.7019},
     {'id': 'loc_16', 'name': 'Design (Fashion) Block', 'question': 'Mannequins and sewing machines are common sights in this building.', 'answer': 'design block', 'hint': "It's the fashion hub.", 'image': 'design_block.jpeg', 'lat': 31.2482, 'lng': 75.6992},
@@ -72,7 +72,7 @@ def evaluate_guess_with_ai(guess, location_name):
         return False
     try:
         model = genai.GenerativeModel("gemini-2.5-flash")
-        prompt = f"System Instruction: You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 32' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
+        prompt = f"System Instruction: You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 14' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
         response = model.generate_content(
             prompt,
             generation_config=genai.types.GenerationConfig(temperature=0.1, max_output_tokens=5)
