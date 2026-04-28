@@ -235,7 +235,7 @@ def chat():
         
         if GEMINI_AVAILABLE:
             try:
-                model = genai.GenerativeModel("gemini-1.5-flash")
+                model = genai.GenerativeModel("gemini-2.5-flash")
                 # Domain-Specific Prompting & Model Configuration (Assessment Requirement)
                 prompt = f"System Instruction: You are an expert guide for the Lovely Professional University (LPU) campus. Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly.\n\n"
                 
@@ -262,7 +262,7 @@ def chat():
     # If Gemini is configured, use it for generic chat!
     if GEMINI_AVAILABLE:
         try:
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            model = genai.GenerativeModel("gemini-2.5-flash")
             # Strict Domain Constraint & Model Configuration (Assessment Requirement)
             domain_prompt = (
                 "System Instruction: You are a helpful and mysterious tour guide for the LPU (Lovely Professional University) Campus Treasure Hunt. "
