@@ -42,7 +42,9 @@ def call_groq_api(sys_prompt, user_message=None, temp=0.1, max_tok=5):
             return result['choices'][0]['message']['content']
     except Exception as e:
         print(f"Groq API Error: {e}")
-        return None
+        if hasattr(e, 'read'):
+            return f"ERROR: {e} - {e.read().decode('utf-8')}"
+        return f"ERROR: {str(e)}"
 
 if os.environ.get("VERCEL"):
     DB_FILE = '/tmp/database.json'
@@ -340,6 +342,8 @@ def chat():
             
             response_text = call_groq_api(sys_prompt, user_message=user_message, temp=0.4, max_tok=150)
             if response_text:
+                if response_text.startswith("ERROR:"):
+                    return jsonify({"reply": response_text})
                 return jsonify({"reply": f"{response_text.replace('\n', '<br>')}"})
         except Exception as e:
             pass
