@@ -241,15 +241,7 @@ body {
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     border: 2px solid white;
-    transition: scale 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     cursor: pointer;
-}
-
-.custom-pin:hover {
-    scale: 1.15;
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.5) !important;
-    animation: none !important; /* Prevents flickering from fighting the pulse animation */
-    z-index: 1000 !important;
 }
 
 .pin-locked { background: #555; opacity: 0.7; pointer-events: none; }
