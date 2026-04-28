@@ -13,14 +13,14 @@ except ImportError:
     pass
 
 try:
-    import google.generativeai as genai
-    if "GEMINI_API_KEY" in os.environ:
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-        GEMINI_AVAILABLE = True
+    from groq import Groq
+    if "GROQ_API_KEY" in os.environ:
+        client = Groq(api_key=os.environ["GROQ_API_KEY"])
+        GROQ_AVAILABLE = True
     else:
-        GEMINI_AVAILABLE = False
+        GROQ_AVAILABLE = False
 except ImportError:
-    GEMINI_AVAILABLE = False
+    GROQ_AVAILABLE = False
 
 if os.environ.get("VERCEL"):
     DB_FILE = '/tmp/database.json'
@@ -68,16 +68,17 @@ def normalize_string(s):
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
 def evaluate_guess_with_ai(guess, location_name):
-    if not GEMINI_AVAILABLE:
+    if not GROQ_AVAILABLE:
         return False
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash")
-        prompt = f"System Instruction: You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 14' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(temperature=0.1, max_output_tokens=5)
+        sys_prompt = f"You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 14' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "system", "content": sys_prompt}],
+            model="llama3-8b-8192",
+            temperature=0.1,
+            max_tokens=5
         )
-        return "YES" in response.text.strip().upper()
+        return "YES" in chat_completion.choices[0].message.content.strip().upper()
     except Exception as e:
         print(f"AI evaluation error: {e}")
         return False
@@ -288,23 +289,21 @@ def chat():
         target_name = CLUES[level]["name"]
         hint_text = CLUES[level]["hint"]
         
-        if GEMINI_AVAILABLE:
+        if GROQ_AVAILABLE:
             try:
-                model = genai.GenerativeModel("gemini-2.5-flash")
                 # Domain-Specific Prompting & Model Configuration (Assessment Requirement)
-                prompt = f"System Instruction: You are an expert guide for the Lovely Professional University (LPU) campus. Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly.\n\n"
+                sys_prompt = f"You are an expert guide for the Lovely Professional University (LPU) campus. Generate a short 1-sentence cryptic hint for a university location named '{target_name}'. Do not say the name directly."
                 
-                response = model.generate_content(
-                    prompt,
-                    generation_config=genai.types.GenerationConfig(
-                        temperature=0.8, # Higher for creative, cryptic hints
-                        top_p=0.9,
-                    )
+                chat_completion = client.chat.completions.create(
+                    messages=[{"role": "system", "content": sys_prompt}],
+                    model="llama3-8b-8192",
+                    temperature=0.8, # Higher for creative, cryptic hints
+                    top_p=0.9,
                 )
-                if response.text:
-                    hint_text = response.text.replace('\n', '<br>')
+                if chat_completion.choices[0].message.content:
+                    hint_text = chat_completion.choices[0].message.content.replace('\n', '<br>')
             except Exception as e:
-                print(f"Gemini API Error: {e}")
+                print(f"Groq API Error: {e}")
                 
         return jsonify({"reply": f"<b>💡 AI Hint ({user_data['hints_used']} used - 5m penalty):</b><br>{hint_text}"})
 
@@ -314,28 +313,28 @@ def chat():
         save_db(db)
         return jsonify({"reply": f"Team name set to <b>{team_name}</b>! 🎉 Good luck!"})
 
-    # If Gemini is configured, use it for generic chat!
-    if GEMINI_AVAILABLE:
+    # If Groq is configured, use it for generic chat!
+    if GROQ_AVAILABLE:
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
             # Strict Domain Constraint & Model Configuration (Assessment Requirement)
-            domain_prompt = (
-                "System Instruction: You are a helpful and mysterious tour guide for the LPU (Lovely Professional University) Campus Treasure Hunt. "
+            sys_prompt = (
+                "You are a helpful and mysterious tour guide for the LPU (Lovely Professional University) Campus Treasure Hunt. "
                 "Your role is 'Domain Expert'. You must ONLY answer questions related to LPU, the campus, locations, or the treasure hunt game. "
-                "If the user asks something outside of this domain, politely refuse and remind them of your purpose. "
-                f"\n\nUser Question: {user_message}"
+                "If the user asks something outside of this domain, politely refuse and remind them of your purpose."
             )
             
-            response = model.generate_content(
-                domain_prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.4, # Lower for factual, domain-constrained answers
-                    top_p=0.8,
-                    max_output_tokens=150
-                )
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                model="llama3-8b-8192",
+                temperature=0.4, # Lower for factual, domain-constrained answers
+                top_p=0.8,
+                max_tokens=150
             )
-            if response.text:
-                return jsonify({"reply": f"{response.text.replace('\n', '<br>')}"})
+            if chat_completion.choices[0].message.content:
+                return jsonify({"reply": f"{chat_completion.choices[0].message.content.replace('\n', '<br>')}"})
         except Exception as e:
             pass
             
