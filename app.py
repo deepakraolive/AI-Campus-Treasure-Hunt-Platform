@@ -86,12 +86,17 @@ def is_correct_guess(guess, correct_answer):
     norm_guess = normalize_string(guess)
     norm_correct = normalize_string(correct_answer)
     
-    # Direct match after removing spaces/punctuation (e.g. "uni mall" == "unimall")
-    if norm_guess == norm_correct:
+    # Basic stemming (remove trailing 's')
+    stem_guess = norm_guess[:-1] if norm_guess.endswith('s') else norm_guess
+    stem_correct = norm_correct[:-1] if norm_correct.endswith('s') else norm_correct
+    
+    if stem_guess == stem_correct:
         return True
         
-    # Check if user typed a substantial substring (e.g. "mittal" inside "shanti devi mittal auditorium")
-    if len(norm_guess) > 3 and norm_guess in norm_correct:
+    if len(stem_guess) > 3 and stem_guess in stem_correct:
+        return True
+        
+    if len(stem_correct) > 3 and stem_correct in stem_guess:
         return True
         
     return False
