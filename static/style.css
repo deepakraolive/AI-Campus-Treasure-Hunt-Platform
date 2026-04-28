@@ -11,6 +11,40 @@
     --glass-bg: rgba(22, 27, 34, 0.85);
 }
 
+body.light-theme {
+    --bg-color: #f6f8fa;
+    --container-bg: #ffffff;
+    --primary-color: #ff6b00; 
+    --primary-glow: rgba(255, 107, 0, 0.2);
+    --bot-msg-bg: #f3f4f6;
+    --text-primary: #1f2328;
+    --text-secondary: #656d76;
+    --border-color: #d0d7de;
+    --glass-bg: rgba(255, 255, 255, 0.9);
+}
+
+.floating-coin-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFD700;
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Outfit';
+    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 5000;
+    pointer-events: none;
+    animation: floatUp 2s forwards ease-out;
+}
+
+@keyframes floatUp {
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.8); }
+    10% { opacity: 1; transform: translate(-50%, -20px) scale(1.1); }
+    80% { opacity: 1; transform: translate(-50%, -80px) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -100px) scale(0.9); }
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {

@@ -20,6 +20,33 @@ const registrationOverlay = document.getElementById('registration-overlay');
 const registrationForm = document.getElementById('registration-form');
 const continueBtn = document.getElementById('continue-btn');
 const resetBtn = document.getElementById('reset-btn');
+const toggleMusicBtn = document.getElementById('toggle-music');
+const toggleThemeBtn = document.getElementById('toggle-theme');
+const bgMusic = document.getElementById('bg-music');
+const coinSound = document.getElementById('coin-sound');
+const coinFloatContainer = document.getElementById('coin-float-container');
+
+// Theme Logic
+let isLightMode = localStorage.getItem('lpu_theme') === 'light';
+if (isLightMode) document.body.classList.add('light-theme');
+toggleThemeBtn.addEventListener('click', () => {
+    isLightMode = !isLightMode;
+    document.body.classList.toggle('light-theme', isLightMode);
+    localStorage.setItem('lpu_theme', isLightMode ? 'light' : 'dark');
+});
+
+// Music Logic
+let isMusicPlaying = false;
+toggleMusicBtn.addEventListener('click', () => {
+    isMusicPlaying = !isMusicPlaying;
+    if (isMusicPlaying) {
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
+        toggleMusicBtn.style.color = '#ff6b00';
+    } else {
+        bgMusic.pause();
+        toggleMusicBtn.style.color = '';
+    }
+});
 
 // Initialize Map
 const lpuCenter = [31.2505, 75.7015];
@@ -90,6 +117,17 @@ async function loadMapData() {
             iconAnchor: [15, 15]
         });
         
+        // Final Flag
+        const isLastLocation = (loc.id === data.locations[data.locations.length - 1].id);
+        if (isLastLocation && loc.status === 'active') {
+            customIcon = L.divIcon({
+                className: `custom-pin pin-active level-${loc.game_level || 5}`,
+                html: '<i class="fa-solid fa-flag-checkered"></i>',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
+            });
+        }
+        
         // Special "START" pin for the very first location
         if (loc.id === 'loc_1' && loc.status === 'active') {
             customIcon = L.divIcon({
@@ -148,6 +186,15 @@ window.submitGuess = async function(locationId) {
             successLocationName.innerHTML = `<span style="color:#ff4444; font-size: 0.9em;">Out of attempts! The answer was:</span><br>${data.name || "Unknown Location"}`;
         } else {
             successLocationName.innerText = data.name || "Unknown Location";
+            // Play Coin Sound and show animation
+            coinSound.currentTime = 0;
+            coinSound.play().catch(e => console.log("Sound failed:", e));
+            
+            const floatAnim = document.createElement('div');
+            floatAnim.className = 'floating-coin-text';
+            floatAnim.innerText = '+100 Coins Gained!';
+            coinFloatContainer.appendChild(floatAnim);
+            setTimeout(() => floatAnim.remove(), 2000);
         }
         successImage.src = `/static/images/${data.image}`;
         successImage.classList.remove('hidden');

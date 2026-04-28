@@ -27,6 +27,17 @@
     <!-- Main Map Container -->
     <div id="map"></div>
 
+    <!-- Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="/static/audio/bg_music.ogg" type="audio/ogg">
+    </audio>
+    <audio id="coin-sound">
+        <source src="/static/audio/coin_sound.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- Floating Coin Animation Container -->
+    <div id="coin-float-container"></div>
+
     <!-- UI Overlay: Top Bar -->
     <header class="top-overlay">
         <div class="logo">
@@ -36,6 +47,8 @@
             <div id="coin-counter" class="glass-btn" style="color: #FFD700; font-weight: bold; padding: 0.5rem 1rem;">
                 <i class="fa-solid fa-coins"></i> <span id="coin-amount">0</span>
             </div>
+            <button id="toggle-music" class="glass-btn" title="Toggle Music"><i class="fa-solid fa-music"></i></button>
+            <button id="toggle-theme" class="glass-btn" title="Toggle Light/Dark Theme"><i class="fa-solid fa-moon"></i></button>
             <button id="toggle-chatbot" title="Open AI Guide"><i class="fa-solid fa-robot"></i> Guide</button>
             <a href="/leaderboard" target="_blank" class="glass-btn"><i class="fa-solid fa-trophy"></i></a>
             <button id="reset-btn" class="glass-btn" title="Restart"><i class="fa-solid fa-rotate-right"></i></button>
