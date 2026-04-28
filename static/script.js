@@ -138,7 +138,11 @@ window.submitGuess = async function(locationId) {
     const data = await res.json();
     
     if (data.success) {
-        successLocationName.innerText = data.name || "Unknown Location";
+        if (data.auto_solved) {
+            successLocationName.innerHTML = `<span style="color:#ff4444; font-size: 0.9em;">Out of attempts! The answer was:</span><br>${data.name || "Unknown Location"}`;
+        } else {
+            successLocationName.innerText = data.name || "Unknown Location";
+        }
         successImage.src = `/static/images/${data.image}`;
         successImage.classList.remove('hidden');
         map.closePopup();

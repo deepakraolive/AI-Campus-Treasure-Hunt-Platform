@@ -67,6 +67,21 @@ def normalize_string(s):
     # Remove all non-alphanumeric characters (spaces, punctuation, etc.)
     return re.sub(r'[^a-z0-9]', '', s.lower())
 
+def evaluate_guess_with_ai(guess, location_name):
+    if not GEMINI_AVAILABLE:
+        return False
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        prompt = f"System Instruction: You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 32' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(temperature=0.1, max_output_tokens=5)
+        )
+        return "YES" in response.text.strip().upper()
+    except Exception as e:
+        print(f"AI evaluation error: {e}")
+        return False
+
 def is_correct_guess(guess, correct_answer):
     norm_guess = normalize_string(guess)
     norm_correct = normalize_string(correct_answer)
@@ -92,7 +107,8 @@ def get_user_data(user_id):
             "start_time": time.time(),
             "end_time": None,
             "completed": False,
-            "hints_used": 0
+            "hints_used": 0,
+            "failed_attempts_current_level": 0
         }
         save_db(db)
     return db[user_id]
@@ -196,8 +212,16 @@ def make_guess():
     if location_id != current_clue["id"]:
         return jsonify({"success": False, "error": "Wrong pin! Try the active pin."})
         
-    if is_correct_guess(answer, current_clue["answer"]):
+    # Try basic string match first
+    is_correct = is_correct_guess(answer, current_clue["answer"])
+    
+    # If basic match fails, fallback to AI logic (if plausible length)
+    if not is_correct and len(answer) > 2:
+        is_correct = evaluate_guess_with_ai(answer, current_clue["name"])
+
+    if is_correct:
         user_data["level"] += 1
+        user_data["failed_attempts_current_level"] = 0
         level = user_data["level"]
         
         if level >= len(CLUES):
@@ -207,8 +231,34 @@ def make_guess():
         save_db(db)
         return jsonify({"success": True, "image": current_clue["image"], "name": current_clue["name"]})
     else:
-        # Wrong answer triggers hint logic via frontend chatbot
-        return jsonify({"success": False, "trigger_hint": True})
+        # Wrong answer logic
+        failed = user_data.get("failed_attempts_current_level", 0) + 1
+        user_data["failed_attempts_current_level"] = failed
+        
+        if failed >= 3:
+            # Auto-solve after 3 failed attempts
+            user_data["level"] += 1
+            user_data["failed_attempts_current_level"] = 0
+            level = user_data["level"]
+            
+            if level >= len(CLUES):
+                user_data["completed"] = True
+                user_data["end_time"] = time.time()
+                
+            save_db(db)
+            return jsonify({
+                "success": True,
+                "auto_solved": True,
+                "image": current_clue["image"],
+                "name": current_clue["name"]
+            })
+            
+        save_db(db)
+        return jsonify({
+            "success": False, 
+            "trigger_hint": True, 
+            "error": f"Incorrect! ({3 - failed} attempts left)"
+        })
 
 @app.route("/chat", methods=["POST"])
 def chat():
