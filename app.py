@@ -74,7 +74,7 @@ def evaluate_guess_with_ai(guess, location_name):
         sys_prompt = f"You are validating answers for a university treasure hunt. The correct location is '{location_name}'. The user guessed '{guess}'. Is this guess correct? It might be an alternate name or abbreviation (like 'Block 14' for 'Mittal School of Business', or 'Admissions' for 'Admissions Block'). Reply strictly with exactly 'YES' if it is reasonably correct or 'NO' if it is incorrect."
         chat_completion = client.chat.completions.create(
             messages=[{"role": "system", "content": sys_prompt}],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             temperature=0.1,
             max_tokens=5
         )
@@ -296,7 +296,7 @@ def chat():
                 
                 chat_completion = client.chat.completions.create(
                     messages=[{"role": "system", "content": sys_prompt}],
-                    model="llama3-8b-8192",
+                    model="llama-3.1-8b-instant",
                     temperature=0.8, # Higher for creative, cryptic hints
                     top_p=0.9,
                 )
@@ -328,7 +328,7 @@ def chat():
                     {"role": "system", "content": sys_prompt},
                     {"role": "user", "content": user_message}
                 ],
-                model="llama3-8b-8192",
+                model="llama-3.1-8b-instant",
                 temperature=0.4, # Lower for factual, domain-constrained answers
                 top_p=0.8,
                 max_tokens=150
