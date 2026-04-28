@@ -5,13 +5,14 @@ from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
-DB_FILE = 'database.json'
-
 # Attempt to import google-generativeai for AI Engine feature
 try:
     from dotenv import load_dotenv
     load_dotenv()
-    
+except ImportError:
+    pass
+
+try:
     import google.generativeai as genai
     if "GEMINI_API_KEY" in os.environ:
         genai.configure(api_key=os.environ["GEMINI_API_KEY"])
@@ -20,6 +21,11 @@ try:
         GEMINI_AVAILABLE = False
 except ImportError:
     GEMINI_AVAILABLE = False
+
+if os.environ.get("VERCEL"):
+    DB_FILE = '/tmp/database.json'
+else:
+    DB_FILE = 'database.json'
 
 # Hardcoded LPU Specific Clues with Coordinates (Sequential path)
 CLUES = [
