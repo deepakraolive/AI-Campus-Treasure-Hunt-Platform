@@ -124,9 +124,9 @@ async function loadMapData() {
             let flagClass = loc.status === 'active' ? 'pin-active' : (loc.status === 'solved' ? 'pin-solved' : 'pin-locked');
             customIcon = L.divIcon({
                 className: `custom-pin ${flagClass} level-${loc.game_level || 5}`,
-                html: '<i class="fa-solid fa-flag-checkered"></i>',
-                iconSize: [35, 35],
-                iconAnchor: [17, 17]
+                html: '<div style="display:flex; flex-direction:column; align-items:center;"><i class="fa-solid fa-flag-checkered"></i><span style="font-size: 0.6rem; font-weight: 900; margin-top:-2px;">END</span></div>',
+                iconSize: [35, 45],
+                iconAnchor: [17, 22]
             });
         }
         
