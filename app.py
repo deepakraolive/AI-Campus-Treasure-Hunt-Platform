@@ -76,7 +76,7 @@ CLUES = [
     {'id': 'loc_11', 'name': 'Unipolis', 'question': 'A semi-covered arena that is the heart of cultural activities.', 'answer': 'unipolis', 'hint': "Sounds like 'University Metropolis'.", 'image': 'unipolis.jpeg', 'lat': 31.2459, 'lng': 75.7014},
     {'id': 'loc_14', 'name': 'Student Welfare Wing', 'question': 'Where student organizations and event permissions are managed.', 'answer': 'student welfare', 'hint': 'Welfare is their middle name.', 'image': 'student_welfare.jpeg', 'lat': 31.2464, 'lng': 75.7019},
     {'id': 'loc_16', 'name': 'Design (Fashion) Block', 'question': 'Mannequins and sewing machines are common sights in this building.', 'answer': 'design block', 'hint': "It's the fashion hub.", 'image': 'design_block.jpeg', 'lat': 31.2482, 'lng': 75.6992},
-    {'id': 'loc_19', 'name': 'School of Agriculture', 'question': 'Where the seeds of tomorrow are planted and studied.', 'answer': 'agriculture', 'hint': 'Look for the green thumb building.', 'image': 'agriculture_block.png', 'lat': 31.244, 'lng': 75.701},
+    {'id': 'loc_19', 'name': 'School of Agriculture', 'question': 'Where the seeds of tomorrow are planted and studied.', 'answer': 'agriculture', 'hint': 'Look for the green thumb building.', 'image': 'agriculture_block.png', 'lat': 31.2452, 'lng': 75.699},
 ]
 
 def load_db():
